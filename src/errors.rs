@@ -1,6 +1,10 @@
 use crate::Span;
 use thiserror::Error;
 
+/// Any error from parsing a flow file should be handled with this error.
+/// The span locates the error in the source file.
+/// The message should be a helpful message that explains why the parse failed.
+/// The help is optional additional context.
 #[derive(Debug, PartialEq, Error)]
 #[error("Could not parse flow file")]
 pub struct ParseError<'a> {
@@ -64,7 +68,8 @@ impl<'a> nom_supreme::tag::TagError<Span<'a>, &str> for ParseError<'a> {
     }
 }
 
-// The main returned error when a file fails translation
+/// The main returned error when a file fails translation. This is used to
+/// generate a nice error message when a parser fails
 #[derive(thiserror::Error, Debug, miette::Diagnostic)]
 #[error("could not parse flow file: {file_name}")]
 pub struct FileError {

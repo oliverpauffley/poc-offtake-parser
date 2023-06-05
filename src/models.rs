@@ -42,6 +42,10 @@ pub enum ProfileClass {
     Class2,
     Class3,
     Class4,
+    Class5,
+    Class6,
+    Class7,
+    Class8,
 }
 
 impl FromStr for ProfileClass {
@@ -53,6 +57,10 @@ impl FromStr for ProfileClass {
             "2" => Ok(ProfileClass::Class2),
             "3" => Ok(ProfileClass::Class3),
             "4" => Ok(ProfileClass::Class4),
+            "5" => Ok(ProfileClass::Class5),
+            "6" => Ok(ProfileClass::Class6),
+            "7" => Ok(ProfileClass::Class7),
+            "8" => Ok(ProfileClass::Class8),
             _ => Err(format!("cannot parse {} into a profile class", s).into()),
         }
     }

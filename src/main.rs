@@ -1,3 +1,28 @@
+//! # Elexon Offtake file parsing
+//! Using nom parsing to extract data from elexon offtake data files.
+//!
+//! ## Nom
+//! Nom is a combinator parser so it builds the complete parser out of small functions
+//! that do increasingly complicated logic. More information on nom can be found [here](https://docs.rs/nom/latest/nom/).
+//!
+//! We also use [nom_supreme](https://docs.rs/nom-supreme/latest/nom_supreme/) for some utilities to make parsing a little cleaner
+//! and [nom_locate](https://docs.rs/nom_locate/latest/nom_locate/) to produce rich error types.
+//!
+//! ## File Format
+//! The file is a pipe seperated list of offtake values for a given day in a specfic location. A single line looks like so:
+//! ```
+//! DPP|1|20230401|.0000491
+//! ```
+//!
+//! Which is `identifer|location|date|value`
+//!
+//! These are grouped into Profile Class Groups with lines:
+//! ```
+//! PFC|1
+//! ```
+//! Where the number is the [profile class](https://www.elexon.co.uk/knowledgebase/profile-classes/) identifer
+use std::time::Instant;
+
 use errors::FileError;
 use errors::ParseError;
 use models::*;
@@ -16,14 +41,18 @@ use nom_supreme::ParserExt;
 mod errors;
 mod models;
 
+/// example main
 fn main() -> miette::Result<()> {
     let file = include_str!("AUC.txt");
 
     let result = parse_flow_file(file.into());
 
+    let now = Instant::now();
+
     match result {
-        Ok((_rest, line)) => {
-            //println!("{line:?}]");
+        Ok((_rest, _file)) => {
+            let elasped = now.elapsed();
+            println!("{elasped:?}]");
             Ok(())
         }
         Err(e) => match e {
@@ -46,11 +75,12 @@ fn main() -> miette::Result<()> {
 pub type Span<'a> = LocatedSpan<&'a str>;
 pub type IResult<'a, O> = nom::IResult<Span<'a>, O, ParseError<'a>>;
 
+/// The main parsing function that collects our other parsers. First get the header line.
+/// Then get all of the offtake lines and finally grab the trailer.
 fn parse_flow_file(file: Span) -> IResult<WrappedFile> {
     let (rest, header) = header(file)?;
     let (rest, offtakes) = offtake_file(rest)?;
-
-    println!("{:?}", rest.lines().next().unwrap());
+    let (_, trailer) = trailer.parse(rest)?;
 
     Ok((
         rest,
@@ -59,11 +89,13 @@ fn parse_flow_file(file: Span) -> IResult<WrappedFile> {
             file: OfftakeFile {
                 profile_groups: offtakes,
             },
-            trailer: TrailerLine {},
+            trailer,
         },
     ))
 }
 
+/// Gets the header from an electricity flow file. Since we don't care about most of the details
+/// we only consume the date from the file.
 fn header(line: Span) -> IResult<HeaderLine> {
     let mut parser = delimited(
         tuple((
@@ -89,6 +121,7 @@ fn header(line: Span) -> IResult<HeaderLine> {
     Ok((rest, HeaderLine { date_time: date }))
 }
 
+/// parse the trailer line.
 fn trailer(line: Span) -> IResult<TrailerLine> {
     let (rest, (_tag, _, _, _, _, _)) =
         tuple((tag("ZPT"), tag("|"), digit1, tag("|"), digit1, line_ending))(line)?;
@@ -96,13 +129,18 @@ fn trailer(line: Span) -> IResult<TrailerLine> {
     Ok((rest, TrailerLine {}))
 }
 
+/// A looping parser over our offtake lines with the PFC grouping.
+/// These groups are seperated by `PFC` and end when we reach the trailer with `ZPT`
 fn offtake_file(input: Span) -> IResult<Vec<ProfileGroups>> {
     collect_separated_terminated(profile_class_group, tag("PFC").peek(), tag("ZPT").peek())
         .parse(input)
 }
 
+/// From the profile class line grab the profile class number
+/// ie `PFC|1` => `ProfileClass:Class1`
+/// This can fail if the line is malformed or if the number isnt a know profile class.
 fn profile_class(line: Span) -> IResult<ProfileClass> {
-    let (rest, pc) = delimited(tag("PFC").precedes(tag("|")), digit1, line_ending)(line)?;
+    let (rest, pc) = delimited(tuple((tag("PFC"), (tag("|")))), digit1, line_ending)(line)?;
 
     let pc = pc.parse().map_err(|err| {
         nom::Err::Error(ParseError::new(
@@ -115,9 +153,21 @@ fn profile_class(line: Span) -> IResult<ProfileClass> {
     Ok((rest, pc))
 }
 
+/// Parser the profile class with its offtake lines.
+/// It expects a group of the form:
+/// ```
+/// PFC|1
+/// DPP|1|20230401|.0000355
+/// DPP|2|20230401|.0000354
+/// DPP|3|20230401|.0000361
+/// DPP|4|20230401|.0000354
+/// DPP|5|20230401|.0000354
+/// DPP|6|20230401|.0000349
+/// DPP|7|20230401|.0000362
+/// ```
 fn profile_class_group(line: Span) -> IResult<ProfileGroups> {
-    let (rest, profile_class) = profile_class(line)?;
-    let (rest, values) = offtake_group_parser(rest)?;
+    let (input, profile_class) = profile_class(line)?;
+    let (rest, values) = offtake_group_parser(input)?;
 
     Ok((
         rest,
@@ -128,22 +178,27 @@ fn profile_class_group(line: Span) -> IResult<ProfileGroups> {
     ))
 }
 
+/// Looping parser for offtake lines starting with `DPP`, we use the start of each line as the seperator.
+/// We know we have finished when we reach a new profile group starting with `PFC`
+/// or the end of the file with `ZPT`
 fn offtake_group_parser(input: Span) -> IResult<Vec<OfftakeRow>> {
-    collect_separated_terminated(
-        offtake_line,
-        tag("DPP").peek(),
-        tag("PFC").peek().or(tag("ZPT").peek()),
-    )
-    .parse(input)
+    collect_separated_terminated(offtake_line, tag("DPP").peek(), offtake_group_terminator)
+        .parse(input)
 }
 
+/// The end of set of offtake lines could either be a new profile group or the trailer
+fn offtake_group_terminator(input: Span) -> IResult<Span> {
+    tag("PFC").peek().or(tag("ZPT").peek()).parse(input)
+}
+
+/// Parse a single offtake line
 fn offtake_line(line: Span) -> IResult<OfftakeRow> {
     let mut parser = tuple((
         tag("DPP"),
         tag("|"),
         digit1,
         tag("|"),
-        day,
+        date,
         tag("|"),
         double,
         line_ending,
@@ -153,7 +208,7 @@ fn offtake_line(line: Span) -> IResult<OfftakeRow> {
     let location = location.parse().map_err(|err| {
         nom::Err::Error(ParseError::new(
             format!("failed to parse location: {}", err),
-            Some("location should be a number between 1 and 48".to_string()),
+            Some("location should be a number between 1 and 50".to_string()),
             line,
         ))
     })?;
@@ -166,7 +221,8 @@ fn offtake_line(line: Span) -> IResult<OfftakeRow> {
     Ok((rest, row))
 }
 
-fn day(input: Span) -> IResult<chrono::NaiveDate> {
+/// Parse the date in the form `YearMonthDay`
+fn date(input: Span) -> IResult<chrono::NaiveDate> {
     let mut parser = digit1;
 
     let (rest, raw_digits) = parser.parse(input)?;
@@ -182,6 +238,7 @@ fn day(input: Span) -> IResult<chrono::NaiveDate> {
     Ok((rest, day))
 }
 
+/// Parse the date and time in the form `YearMonthDayHourMinuteSecond`
 fn date_time(input: Span) -> IResult<chrono::NaiveDateTime> {
     let mut parser = digit1;
 
@@ -225,7 +282,7 @@ mod test_parsers {
     fn test_day_valid() {
         // valid input
         let input = "20230102";
-        let (_, got) = day(input.into()).unwrap();
+        let (_, got) = date(input.into()).unwrap();
         let want = chrono::NaiveDate::from_ymd_opt(2023, 1, 2).unwrap();
         assert_eq!(want, got);
     }
@@ -255,7 +312,7 @@ mod test_parsers {
     }
 
     #[test]
-    fn test_offtake_group() {
+    fn test_offtake_group_middle() {
         let input = "DPP|1|20230401|.0000491
 DPP|2|20230401|.0000472
 DPP|3|20230401|.000039
@@ -273,6 +330,35 @@ PFC|2
                 location: Location::Location2,
                 day,
                 value: 0.0000472,
+            },
+            OfftakeRow {
+                location: Location::Location3,
+                day,
+                value: 0.000039,
+            },
+        ];
+        assert_eq!(want, got)
+    }
+
+    #[test]
+    fn test_offtake_group_final() {
+        let input = "DPP|1|20230401|.0000491
+DPP|2|20230401|0
+DPP|3|20230401|.000039
+ZPT|
+";
+        let (_, got) = offtake_group_parser(input.into()).unwrap();
+        let day = chrono::NaiveDate::from_ymd_opt(2023, 4, 1).unwrap();
+        let want = vec![
+            OfftakeRow {
+                location: Location::Location1,
+                day,
+                value: 0.0000491,
+            },
+            OfftakeRow {
+                location: Location::Location2,
+                day,
+                value: 0.0,
             },
             OfftakeRow {
                 location: Location::Location3,
@@ -303,6 +389,13 @@ DPP|2|20230401|.2
 PFC|3
 DPP|1|20230401|.1
 DPP|2|20230401|.2
+PFC|4
+DPP|1|20230401|.1
+PFC|5
+DPP|1|20230401|.1
+PFC|6
+DPP|1|20230401|.1
+
 ZPT|140554|1564691006
 ";
 

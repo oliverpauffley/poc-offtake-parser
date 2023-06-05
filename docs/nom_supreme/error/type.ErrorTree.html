@@ -1,0 +1,180 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="A comprehensive tree of nom errors describing a parse failure."><title>ErrorTree in nom_supreme::error - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc type"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../../nom_supreme/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../../nom_supreme/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2 class="location"><a href="#">ErrorTree</a></h2><div class="sidebar-elems"><h2><a href="index.html">In nom_supreme::error</a></h2></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Type Definition <a href="../index.html">nom_supreme</a>::<wbr><a href="index.html">error</a>::<wbr><a class="type" href="#">ErrorTree</a><button id="copy-path" title="Copy item path to clipboard"><img src="../../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="srclink" href="../../src/nom_supreme/error.rs.html#377-378">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><pre class="rust item-decl"><code>pub type ErrorTree&lt;I&gt; = <a class="enum" href="enum.GenericErrorTree.html" title="enum nom_supreme::error::GenericErrorTree">GenericErrorTree</a>&lt;I, &amp;'static <a class="primitive" href="https://doc.rust-lang.org/1.69.0/std/primitive.str.html">str</a>, &amp;'static <a class="primitive" href="https://doc.rust-lang.org/1.69.0/std/primitive.str.html">str</a>, <a class="struct" href="https://doc.rust-lang.org/1.69.0/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/1.69.0/core/error/trait.Error.html" title="trait core::error::Error">Error</a> + <a class="trait" href="https://doc.rust-lang.org/1.69.0/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + <a class="trait" href="https://doc.rust-lang.org/1.69.0/core/marker/trait.Sync.html" title="trait core::marker::Sync">Sync</a> + 'static&gt;&gt;;</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>A comprehensive tree of nom errors describing a parse failure.</p>
+<p>This Error type is designed to be <a href="../../nom/error/struct.VerboseError.html" title="struct nom::error::VerboseError"><code>VerboseError</code></a><code>++</code>. While
+<a href="../../nom/error/struct.VerboseError.html" title="struct nom::error::VerboseError"><code>VerboseError</code></a> can represent a <em>stack</em> of errors, this type can represent
+a full tree. In addition to representing a particular specific parse error,
+it can also represent a stack of nested error contexts (for instance, as
+provided by <a href="../parser_ext/trait.ParserExt.html#method.context" title="method nom_supreme::parser_ext::ParserExt::context"><code>context</code></a>), or a list of
+alternatives that were all tried individually by <a href="../../nom/branch/fn.alt.html" title="fn nom::branch::alt"><code>alt</code></a>
+and all failed.</p>
+<p>In general, the design goal for this type is to discard as little useful
+information as possible. That being said, many <a href="../../nom/error/enum.ErrorKind.html" title="enum nom::error::ErrorKind"><code>ErrorKind</code></a> variants add
+very little useful contextual information to error traces; for example,
+<a href="../../nom/error/enum.ErrorKind.html#variant.Alt" title="variant nom::error::ErrorKind::Alt"><code>ErrorKind::Alt</code></a> doesn’t add any interesting context to an
+<a href="enum.GenericErrorTree.html#variant.Alt" title="variant nom_supreme::error::GenericErrorTree::Alt"><code>ErrorTree::Alt</code></a>, and its presence in a stack precludes merging together
+adjacent sets of <a href="enum.GenericErrorTree.html#variant.Alt" title="variant nom_supreme::error::GenericErrorTree::Alt"><code>ErrorTree::Alt</code></a> siblings.</p>
+<h2 id="examples"><a href="#examples">Examples</a></h2><h3 id="base-parser-errors"><a href="#base-parser-errors">Base parser errors</a></h3>
+<p>An <code>ErrorTree::Base</code> is an error that occurred at the “bottom” of the stack,
+from a parser looking for 1 specific kind of thing.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>cool_asserts::assert_matches;
+<span class="kw">use </span>nom::{Parser, <span class="prelude-val">Err</span>};
+<span class="kw">use </span>nom::character::complete::{digit1, char};
+<span class="kw">use </span>nom_supreme::error::{ErrorTree, BaseErrorKind, StackContext, Expectation};
+<span class="kw">use </span>nom_supreme::parser_ext::ParserExt;
+
+<span class="kw">let </span>err: <span class="prelude-val">Err</span>&lt;ErrorTree&lt;<span class="kw-2">&amp;</span>str&gt;&gt; = digit1.parse(<span class="string">&quot;abc&quot;</span>).unwrap_err();
+
+<span class="macro">assert_matches!</span>(err, Err::Error(ErrorTree::Base{
+    location: <span class="string">&quot;abc&quot;</span>,
+    kind: BaseErrorKind::Expected(Expectation::Digit),
+}));
+
+<span class="kw">let </span>err: <span class="prelude-val">Err</span>&lt;ErrorTree&lt;<span class="kw-2">&amp;</span>str&gt;&gt; = char(<span class="string">&#39;a&#39;</span>).and(char(<span class="string">&#39;b&#39;</span>)).parse(<span class="string">&quot;acb&quot;</span>).unwrap_err();
+
+<span class="macro">assert_matches!</span>(err, Err::Error(ErrorTree::Base{
+    location: <span class="string">&quot;cb&quot;</span>,
+    kind: BaseErrorKind::Expected(Expectation::Char(<span class="string">&#39;b&#39;</span>)),
+}));</code></pre></div>
+<h3 id="stacks"><a href="#stacks">Stacks</a></h3>
+<p>An <a href="enum.GenericErrorTree.html#variant.Stack" title="variant nom_supreme::error::GenericErrorTree::Stack"><code>ErrorTree::Stack</code></a> is created when a parser combinator—typically
+<a href="../../nom/error/fn.context.html" title="fn nom::error::context"><code>context</code></a>—attaches additional error context to a subparser error. It can
+have any <a href="type.ErrorTree.html" title="type nom_supreme::error::ErrorTree"><code>ErrorTree</code></a> at the base of the stack.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>cool_asserts::assert_matches;
+<span class="kw">use </span>nom::{Parser, <span class="prelude-val">Err</span>};
+<span class="kw">use </span>nom::character::complete::{alpha1, space1, char,};
+<span class="kw">use </span>nom::sequence::{separated_pair, delimited};
+<span class="kw">use </span>nom_supreme::parser_ext::ParserExt;
+<span class="kw">use </span>nom_supreme::error::{ErrorTree, BaseErrorKind, StackContext, Expectation};
+
+<span class="comment">// Parse a single identifier, defined as just a string of letters.
+</span><span class="kw">let </span>identifier = alpha1.context(<span class="string">&quot;identifier&quot;</span>);
+
+<span class="comment">// Parse a pair of identifiers, separated by whitespace
+</span><span class="kw">let </span>identifier_pair = separated_pair(identifier, space1, identifier)
+    .context(<span class="string">&quot;identifier pair&quot;</span>);
+
+<span class="comment">// Parse a pair of identifiers in parenthesis.
+</span><span class="kw">let </span><span class="kw-2">mut </span>parenthesized = delimited(char(<span class="string">&#39;(&#39;</span>), identifier_pair, char(<span class="string">&#39;)&#39;</span>))
+    .context(<span class="string">&quot;parenthesized&quot;</span>);
+
+<span class="kw">let </span>err: <span class="prelude-val">Err</span>&lt;ErrorTree&lt;<span class="kw-2">&amp;</span>str&gt;&gt; = parenthesized.parse(<span class="string">&quot;(abc 123)&quot;</span>).unwrap_err();
+
+<span class="macro">assert_matches!</span>(err, Err::Error(ErrorTree::Stack {
+    base,
+    contexts,
+}) =&gt; {
+    <span class="macro">assert_matches!</span>(<span class="kw-2">*</span>base, ErrorTree::Base {
+        location: <span class="string">&quot;123)&quot;</span>,
+        kind: BaseErrorKind::Expected(Expectation::Alpha)
+    });
+
+    <span class="macro">assert_eq!</span>(contexts, [
+        (<span class="string">&quot;123)&quot;</span>, StackContext::Context(<span class="string">&quot;identifier&quot;</span>)),
+        (<span class="string">&quot;abc 123)&quot;</span>, StackContext::Context(<span class="string">&quot;identifier pair&quot;</span>)),
+        (<span class="string">&quot;(abc 123)&quot;</span>, StackContext::Context(<span class="string">&quot;parenthesized&quot;</span>)),
+    ]);
+});</code></pre></div>
+<h3 id="alternatives"><a href="#alternatives">Alternatives</a></h3>
+<p>An <a href="enum.GenericErrorTree.html#variant.Alt" title="variant nom_supreme::error::GenericErrorTree::Alt"><code>ErrorTree::Alt</code></a> is created when a series of parsers are all tried,
+and all of them fail. Most commonly this will happen via the
+<a href="../../nom/branch/fn.alt.html" title="fn nom::branch::alt"><code>alt</code></a> combinator or the equivalent <a href="../../nom/internal/trait.Parser.html#method.or" title="method nom::internal::Parser::or"><code>.or</code></a> postfix
+combinator. When all of these subparsers fail, their errors (each
+individually their own <code>ErrorTree</code>) are aggregated into an
+<a href="enum.GenericErrorTree.html#variant.Alt" title="variant nom_supreme::error::GenericErrorTree::Alt"><code>ErrorTree::Alt</code></a>, indicating that “any one of these things were
+expected.”</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>cool_asserts::assert_matches;
+<span class="kw">use </span>nom::{Parser, <span class="prelude-val">Err</span>};
+<span class="kw">use </span>nom::branch::alt;
+<span class="kw">use </span>nom_supreme::error::{ErrorTree, BaseErrorKind, StackContext, Expectation};
+<span class="kw">use </span>nom_supreme::parser_ext::ParserExt;
+<span class="kw">use </span>nom_supreme::tag::complete::tag;
+
+<span class="kw">let </span>parse_bool = alt((
+    tag(<span class="string">&quot;true&quot;</span>).value(<span class="bool-val">true</span>),
+    tag(<span class="string">&quot;false&quot;</span>).value(<span class="bool-val">false</span>),
+));
+
+<span class="kw">let </span><span class="kw-2">mut </span>parse_null_bool = alt((
+    parse_bool.map(<span class="prelude-val">Some</span>),
+    tag(<span class="string">&quot;null&quot;</span>).value(<span class="prelude-val">None</span>),
+));
+
+<span class="macro">assert_eq!</span>(parse_null_bool.parse(<span class="string">&quot;true&quot;</span>).unwrap(), (<span class="string">&quot;&quot;</span>, <span class="prelude-val">Some</span>(<span class="bool-val">true</span>)));
+<span class="macro">assert_eq!</span>(parse_null_bool.parse(<span class="string">&quot;false&quot;</span>).unwrap(), (<span class="string">&quot;&quot;</span>, <span class="prelude-val">Some</span>(<span class="bool-val">false</span>)));
+<span class="macro">assert_eq!</span>(parse_null_bool.parse(<span class="string">&quot;null&quot;</span>).unwrap(), (<span class="string">&quot;&quot;</span>, <span class="prelude-val">None</span>));
+
+<span class="kw">let </span>err: <span class="prelude-val">Err</span>&lt;ErrorTree&lt;<span class="kw-2">&amp;</span>str&gt;&gt; = parse_null_bool.parse(<span class="string">&quot;123&quot;</span>).unwrap_err();
+
+<span class="comment">// This error communicates to the caller that any one of &quot;true&quot;, &quot;false&quot;,
+// or &quot;null&quot; was expected at that location.
+</span><span class="macro">assert_matches!</span>(err, Err::Error(ErrorTree::Alt(choices)) =&gt; {
+    <span class="macro">assert_matches!</span>(choices.as_slice(), [
+        ErrorTree::Base {
+            location: <span class="string">&quot;123&quot;</span>,
+            kind: BaseErrorKind::Expected(Expectation::Tag(<span class="string">&quot;true&quot;</span>))},
+        ErrorTree::Base {
+            location: <span class="string">&quot;123&quot;</span>,
+            kind: BaseErrorKind::Expected(Expectation::Tag(<span class="string">&quot;false&quot;</span>))},
+        ErrorTree::Base {
+            location: <span class="string">&quot;123&quot;</span>,
+            kind: BaseErrorKind::Expected(Expectation::Tag(<span class="string">&quot;null&quot;</span>))},
+    ])
+});</code></pre></div>
+<h3 id="contexts-and-alternatives"><a href="#contexts-and-alternatives">Contexts and Alternatives</a></h3>
+<p>Because <a href="enum.GenericErrorTree.html#variant.Stack" title="variant nom_supreme::error::GenericErrorTree::Stack"><code>Stack</code></a> and <a href="enum.GenericErrorTree.html#variant.Alt" title="variant nom_supreme::error::GenericErrorTree::Alt"><code>Alt</code></a> recursively contain <a href="type.ErrorTree.html" title="type nom_supreme::error::ErrorTree"><code>ErrorTree</code></a> errors from
+subparsers, they can be can combined to create error trees of arbitrary
+complexity.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>cool_asserts::assert_matches;
+<span class="kw">use </span>nom::{Parser, <span class="prelude-val">Err</span>};
+<span class="kw">use </span>nom::branch::alt;
+<span class="kw">use </span>nom_supreme::error::{ErrorTree, BaseErrorKind, StackContext, Expectation};
+<span class="kw">use </span>nom_supreme::parser_ext::ParserExt;
+<span class="kw">use </span>nom_supreme::tag::complete::tag;
+
+<span class="kw">let </span>parse_bool = alt((
+    tag(<span class="string">&quot;true&quot;</span>).value(<span class="bool-val">true</span>),
+    tag(<span class="string">&quot;false&quot;</span>).value(<span class="bool-val">false</span>),
+)).context(<span class="string">&quot;bool&quot;</span>);
+
+<span class="kw">let </span><span class="kw-2">mut </span>parse_null_bool = alt((
+    parse_bool.map(<span class="prelude-val">Some</span>),
+    tag(<span class="string">&quot;null&quot;</span>).value(<span class="prelude-val">None</span>).context(<span class="string">&quot;null&quot;</span>),
+)).context(<span class="string">&quot;null or bool&quot;</span>);
+
+<span class="macro">assert_eq!</span>(parse_null_bool.parse(<span class="string">&quot;true&quot;</span>).unwrap(), (<span class="string">&quot;&quot;</span>, <span class="prelude-val">Some</span>(<span class="bool-val">true</span>)));
+<span class="macro">assert_eq!</span>(parse_null_bool.parse(<span class="string">&quot;false&quot;</span>).unwrap(), (<span class="string">&quot;&quot;</span>, <span class="prelude-val">Some</span>(<span class="bool-val">false</span>)));
+<span class="macro">assert_eq!</span>(parse_null_bool.parse(<span class="string">&quot;null&quot;</span>).unwrap(), (<span class="string">&quot;&quot;</span>, <span class="prelude-val">None</span>));
+
+<span class="kw">let </span>err: <span class="prelude-val">Err</span>&lt;ErrorTree&lt;<span class="kw-2">&amp;</span>str&gt;&gt; = parse_null_bool.parse(<span class="string">&quot;123&quot;</span>).unwrap_err();
+
+<span class="macro">assert_matches!</span>(err, Err::Error(ErrorTree::Stack{base, contexts}) =&gt; {
+    <span class="macro">assert_eq!</span>(contexts, [(<span class="string">&quot;123&quot;</span>, StackContext::Context(<span class="string">&quot;null or bool&quot;</span>))]);
+    <span class="macro">assert_matches!</span>(<span class="kw-2">*</span>base, ErrorTree::Alt(choices) =&gt; {
+        <span class="macro">assert_matches!</span>(<span class="kw-2">&amp;</span>choices[<span class="number">0</span>], ErrorTree::Stack{base, contexts} =&gt; {
+            <span class="macro">assert_eq!</span>(contexts, <span class="kw-2">&amp;</span>[(<span class="string">&quot;123&quot;</span>, StackContext::Context(<span class="string">&quot;bool&quot;</span>))]);
+            <span class="macro">assert_matches!</span>(<span class="kw-2">&amp;**</span>base, ErrorTree::Alt(choices) =&gt; {
+                <span class="macro">assert_matches!</span>(<span class="kw-2">&amp;</span>choices[<span class="number">0</span>], ErrorTree::Base {
+                    location: <span class="string">&quot;123&quot;</span>,
+                    kind: BaseErrorKind::Expected(Expectation::Tag(<span class="string">&quot;true&quot;</span>))
+                });
+                <span class="macro">assert_matches!</span>(<span class="kw-2">&amp;</span>choices[<span class="number">1</span>], ErrorTree::Base {
+                    location: <span class="string">&quot;123&quot;</span>,
+                    kind: BaseErrorKind::Expected(Expectation::Tag(<span class="string">&quot;false&quot;</span>))
+                });
+           });
+        });
+        <span class="macro">assert_matches!</span>(<span class="kw-2">&amp;</span>choices[<span class="number">1</span>], ErrorTree::Stack{base, contexts} =&gt; {
+            <span class="macro">assert_eq!</span>(contexts, <span class="kw-2">&amp;</span>[(<span class="string">&quot;123&quot;</span>, StackContext::Context(<span class="string">&quot;null&quot;</span>))]);
+            <span class="macro">assert_matches!</span>(<span class="kw-2">&amp;**</span>base, ErrorTree::Base {
+                location: <span class="string">&quot;123&quot;</span>,
+                kind: BaseErrorKind::Expected(Expectation::Tag(<span class="string">&quot;null&quot;</span>))
+            });
+        });
+    });
+});</code></pre></div>
+<h2 id="display-formatting"><a href="#display-formatting">Display formatting</a></h2>
+<p>TODO WRITE THIS SECTION</p>
+</div></details></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="nom_supreme" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0 (84c898d65 2023-04-16)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
