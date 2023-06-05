@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["tag","tag_no_case"]};

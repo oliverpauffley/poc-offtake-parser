@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["Stream"],"fn":["on","on_cached"],"struct":["ColorLevel"]};

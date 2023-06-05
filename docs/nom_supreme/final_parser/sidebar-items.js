@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["final_parser"],"struct":["ByteOffset","Location"],"trait":["ExtractContext","RecreateContext"]};

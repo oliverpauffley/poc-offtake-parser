@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["BaseErrorKind","Expectation","GenericErrorTree","StackContext"],"type":["ErrorTree"]};

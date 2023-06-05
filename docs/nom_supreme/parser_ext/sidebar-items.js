@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":["AllConsuming","ArrayParser","Complete","Context","Cut","Delimited","FromStrCutParser","FromStrParser","MapRes","MapResCut","Not","Optional","OptionalPreceded","Peek","Preceded","Recognize","RefParser","ReplaceError","SeparatedArrayParser","Terminated","Value","Verify","WithRecognized"],"trait":["ParserExt"]};
