@@ -1,5 +1,23 @@
+//! # Elexon files
+//! The file is a pipe seperated list of offtake values for a given day in a specfic location. A single line looks like so:
+//! ```
+//! DPP|1|20230401|.0000491
+//! ```
+//!
+//! Which is `identifer|location|date|value`
+//!
+//! These are grouped into Profile Class Groups with lines:
+//! ```
+//! PFC|1
+//! ```
+//! Where the number is the [profile class](https://www.elexon.co.uk/knowledgebase/profile-classes/) identifer
+//!
 use std::error::Error;
 use std::str::FromStr;
+
+mod parser;
+pub use parser::parse_flow_file;
+
 #[derive(Debug, PartialEq)]
 pub struct WrappedFile {
     pub header: HeaderLine,
