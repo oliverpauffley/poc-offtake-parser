@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"poc_offtake_parser":[["impl&lt;'a, String&gt; ContextError&lt;LocatedSpan&lt;&amp;'a <a class=\"primitive\" href=\"https://doc.rust-lang.org/1.69.0/std/primitive.str.html\">str</a>, <a class=\"primitive\" href=\"https://doc.rust-lang.org/1.69.0/std/primitive.unit.html\">()</a>&gt;, String&gt; for <a class=\"struct\" href=\"poc_offtake_parser/errors/struct.ParseError.html\" title=\"struct poc_offtake_parser::errors::ParseError\">ParseError</a>&lt;'a&gt;"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

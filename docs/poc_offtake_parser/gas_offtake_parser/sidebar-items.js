@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Band","ConsumerType","LocalDistributionZone","MeterType"],"mod":["parser"],"struct":["ALPDAFRow","EndUserCategory","SeasonalCompositeWeatherVariableRow","UserGroup"],"type":["ALPDAFFile","SCWVFile"]};

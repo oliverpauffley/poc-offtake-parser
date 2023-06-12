@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Location","ProfileClass"],"mod":["parser"],"struct":["HeaderLine","OfftakeFile","OfftakeRow","ProfileGroups","TrailerLine","WrappedFile"]};
