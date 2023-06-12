@@ -58,6 +58,13 @@ impl<'a> nom::error::ParseError<Span<'a>> for ParseError<'a> {
     }
 }
 
+// TODO: improve this to loop in the context error
+impl<'a, String> nom_supreme::context::ContextError<Span<'a>, String> for ParseError<'a> {
+    fn add_context(_location: Span<'a>, _ctx: String, other: Self) -> Self {
+        other
+    }
+}
+
 impl<'a> nom_supreme::tag::TagError<Span<'a>, &str> for ParseError<'a> {
     fn from_tag(input: Span<'a>, tag: &str) -> Self {
         Self::new(

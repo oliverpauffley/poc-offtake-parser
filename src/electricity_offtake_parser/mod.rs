@@ -1,4 +1,4 @@
-//! # Elexon files
+//! # Elexon Files
 //! The file is a pipe seperated list of offtake values for a given day in a specfic location. A single line looks like so:
 //! ```
 //! DPP|1|20230401|.0000491
