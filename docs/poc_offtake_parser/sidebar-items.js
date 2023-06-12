@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["date","date_time","header","main","offtake_file","offtake_group_parser","offtake_group_terminator","offtake_line","parse_flow_file","profile_class","profile_class_group","trailer"],"mod":["errors","models"],"type":["IResult","Span"]};
+window.SIDEBAR_ITEMS = {"fn":["main"],"mod":["electricity_offtake_parser","errors","gas_offtake_parser"],"type":["IResult","Span"]};
